@@ -63,7 +63,27 @@ class LCD:
         self.position += 1
 
     def check_writable(self, c):
-        if c >= 0x06 and c <= 0xff:
+        if c >= 0x06 and c <= 0xff:  # if ascii
             return c
+        if ord("｡") <= c <= ord("ﾋﾟ"[1]):  # if hankaku katakana
+            return c-ord("｡")+0b10100001
         else:
             return 0x20  # 空白文字
+
+
+def main():
+    lcd = LCD()
+    lcd.write_string("ﾗｽﾞﾍﾞﾘｰ")
+    lcd.newline()
+    lcd.write_string("ﾊﾟｲ")
+
+
+def nashio():
+    lcd = LCD()
+    lcd.write_string("ﾅｼｵ ﾀｶｼ")
+    # lcd.newline()
+
+
+if __name__ == "__main__":
+    # main()
+    nashio()
