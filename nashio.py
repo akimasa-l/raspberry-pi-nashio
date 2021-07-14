@@ -80,7 +80,11 @@ def main():
 
 def nashio():
     lcd = LCD()
-    lcd.write_string("ﾅｼｵ ﾀｶｼ")
+    a = input()
+    if a:
+        lcd.write_string(a)
+    else:
+        lcd.write_string("ﾅｼｵ ﾀｶｼ")
     # lcd.newline()
 
 
