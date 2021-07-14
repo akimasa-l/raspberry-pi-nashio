@@ -1,32 +1,63 @@
 import Telmin
+import argparse
 import random
+import nashio
 import numpy as np
 a, aa, b, c, cc, d, dd, e, f, ff, g, gg = np.geomspace(
     440, 880, 12, endpoint=False)
-OCTAVE = [c, cc, d, dd, e, f, ff, g, gg, a*2, aa*2, b*2]
+OCTAVE = [(c, "ﾄﾞ"), (cc, "ﾄﾞ#"), (d, "ﾚ"), (dd, "ﾚ#"), (e, "ﾐ"), (f, "ﾌｧ"),
+          (ff, "ﾌｧ#"), (g, "ｿ"), (gg, "ｿ#"), (a*2, "ﾗ"), (aa*2, "ﾗ#"), (b*2, "ｼ")]
 # print(OCTAVE)
 
 
-def make_sound(distance: float, base=OCTAVE):
-    if distance >= Telmin.DISTANCE_HIGH:
-        return 0
-    for i, j in zip(range(len(base))[::-1], np.linspace(0, Telmin.DISTANCE_HIGH, len(base)-1, endpoint=True)):
-        if distance < j:
-            return int(round(base[i]))
+class DisplaySound:
+    def __init__(self):
+        self.lcd = nashio.LCD()
+        parser = argparse.ArgumentParser(description='音楽を鳴らすよ！')
+        parser.add_argument(
+            "-l", "--rangel",
+            default=-2, type=int,
+            help="音の範囲の左,マイナスでも可能です。[l,r)のlです。"
+        )
+        parser.add_argument(
+            "-r", "--ranger",
+            default=+3, type=int,
+            help="音の範囲の右,マイナスでも可能です。[l,r)のrです。"
+        )
+        parser.add_argument(
+            "-d", "--distancemax",
+            default=Telmin.DISTANCE_HIGH, type=int,
+            help="測る距離のmaxです。100以上は意味ないです(たぶん)"
+        )
+        self.args = parser.parse_args()
 
+    def make_sound(self, distance: float, base=OCTAVE):
+        if distance >= self.args.distancemax:
+            self.lcd.clear()
+            self.lcd.write_string("ｵﾄﾊ")
+            self.lcd.newline()
+            self.lcd.write_string("ﾅｯﾃｲﾏｾﾝ")
+            return 0
+        for i, j in zip(range(len(base))[::-1], np.linspace(0, self.args.distancemax, len(base)-1, endpoint=True)):
+            if distance < j:
+                # self.lcd.write_string("ｹﾞﾝｻﾞｲﾉｵﾄﾊ")
+                # self.lcd.newline()
+                hz = int(round(base[i][0]))
+                self.lcd.clear()
+                self.lcd.write_string(f"{hz}Hz")
+                self.lcd.newline()
+                self.lcd.write_string(base[i][1])
+                return hz
 
-base = []
-for i in range(-2,3):
-    base += map(lambda x: x*(2**i), OCTAVE)
-
-print(len(base))
-def main():
-
-    def sound_function(x): return make_sound(x, base)
-    termin = Telmin.Telmin()
-    termin.main(sound_function)
+    def main(self):
+        base = []
+        for i in range(self.args.rangel, self.args.ranger):
+            base += map(lambda x: (x[0]*(2**i), x[1]), OCTAVE)
+        print(len(base))
+        def sound_function(x): return self.make_sound(x, base)
+        termin = Telmin.Telmin()
+        termin.main(sound_function)
 
 
 if __name__ == "__main__":
-    # print(np.linspace(0,Telmin.DISTANCE_HIGH,len(OCTAVE)-1,endpoint=True))
-    main()
+    DisplaySound().main()
