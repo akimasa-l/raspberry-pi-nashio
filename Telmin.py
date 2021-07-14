@@ -3,12 +3,21 @@ import random
 import RPi.GPIO as GPIO
 import wiringpi
 
+INTERVAL=0.05
 SOUND_PORT = 2
 ECHO_PORT = 3
 TRIG_PORT = 4
 SOUND_HIGH = 1760
 SOUND_LOW = 220
-DISTANCE_HIGH = 50
+DISTANCE_HIGH = 75
+
+
+def make_sound(distance: float):
+    if distance > DISTANCE_HIGH+1:
+        distance = random.randint(0, DISTANCE_HIGH)
+    a = -DISTANCE_HIGH/(SOUND_HIGH-SOUND_LOW)
+    b = -SOUND_HIGH*a
+    return (distance-b)/a
 
 
 class Telmin:
@@ -19,7 +28,7 @@ class Telmin:
         GPIO.setup(ECHO_PORT, GPIO.IN)
         wiringpi.wiringPiSetupGpio()
         wiringpi.softToneCreate(SOUND_PORT)
-    
+
     def __del__(self):
         print("これほんとに呼ばれるのか？？？")
         GPIO.cleanup()
@@ -38,23 +47,16 @@ class Telmin:
         distance = duration*17000
         return distance
 
-    @staticmethod
-    def make_sound(distance: float):
-        a = -DISTANCE_HIGH/(SOUND_HIGH-SOUND_LOW)
-        b = -SOUND_HIGH*a
-        return (distance-b)/a
-
-    def main(self):
+    def main(self, sound_function=make_sound):
         try:
             while 1:
                 distance = self.read_distance()
-                if distance > DISTANCE_HIGH+1:
-                    distance = random.randint(0, DISTANCE_HIGH)
-                sound = Telmin.make_sound(distance)
+
+                sound = sound_function(distance)
                 print("distance,sound", distance, sound)
 
                 wiringpi.softToneWrite(SOUND_PORT, round(sound))
-                time.sleep(0.05)
+                time.sleep(INTERVAL)
         except KeyboardInterrupt:
             return
 
