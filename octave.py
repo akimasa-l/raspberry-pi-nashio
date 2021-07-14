@@ -29,7 +29,15 @@ class DisplaySound:
             default=Telmin.DISTANCE_HIGH, type=int,
             help="測る距離のmaxです。100以上は意味ないです(たぶん)"
         )
+        parser.add_argument('--excludesharp', action='store_true',
+                            help="これを指定すると、sharp付きの音が消えます。")
         self.args = parser.parse_args()
+
+    def __del__(self):
+        self.lcd.clear()
+        self.lcd.write_string("ｼｭｳﾘｮｳ")
+        self.lcd.newline()
+        self.lcd.write_string("ｼﾏｼﾀ")
 
     def make_sound(self, distance: float, base=OCTAVE):
         if distance >= self.args.distancemax:
@@ -49,10 +57,12 @@ class DisplaySound:
                 self.lcd.write_string(base[i][1])
                 return hz
 
-    def main(self):
+    def main(self, octave=OCTAVE):
+        if self.args.excludesharp:
+            octave = [i for i in OCTAVE if "#" not in i[1]]
         base = []
         for i in range(self.args.rangel, self.args.ranger):
-            base += map(lambda x: (x[0]*(2**i), x[1]), OCTAVE)
+            base += map(lambda x: (x[0]*(2**i), x[1]), octave)
         print(len(base))
         def sound_function(x): return self.make_sound(x, base)
         termin = Telmin.Telmin()
