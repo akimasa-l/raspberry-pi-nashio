@@ -33,6 +33,11 @@ class DisplaySound:
                             help="これを指定すると、sharp付きの音が消えます。")
         self.args = parser.parse_args()
 
+        if self.args.rangel>self.args.ranger:
+            raise ValueError("ranger should be larger than rangel.\nrangerはrangelよりも大きくなくてはいけません。")
+        if not(0<self.args.distancemax<=100):
+            raise ValueError("distancemax should be larger than 0 and smaller than 100.\ndistancemaxは0より大きく、100以下でなければいけません。")
+
     def __del__(self):
         self.lcd.clear()
         self.lcd.write_string("ｼｭｳﾘｮｳ")
