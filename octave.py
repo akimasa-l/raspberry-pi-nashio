@@ -3,8 +3,9 @@ import argparse
 import random
 import nashio
 import numpy as np
+LA=440
 a, aa, b, c, cc, d, dd, e, f, ff, g, gg = np.geomspace(
-    440, 880, 12, endpoint=False)
+    LA, LA*2, 12, endpoint=False)
 OCTAVE = [(c, "ﾄﾞ"), (cc, "ﾄﾞ#"), (d, "ﾚ"), (dd, "ﾚ#"), (e, "ﾐ"), (f, "ﾌｧ"),
           (ff, "ﾌｧ#"), (g, "ｿ"), (gg, "ｿ#"), (a*2, "ﾗ"), (aa*2, "ﾗ#"), (b*2, "ｼ")]
 # print(OCTAVE)
