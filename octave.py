@@ -16,7 +16,7 @@ def make_sound(distance: float, base=OCTAVE):
 
 
 base = []
-for i in range(-2, 3):
+for i in range(-2,3):
     base += map(lambda x: x*(2**i), OCTAVE)
 
 print(len(base))
