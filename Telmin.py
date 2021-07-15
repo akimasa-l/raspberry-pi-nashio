@@ -9,12 +9,12 @@ ECHO_PORT = 17
 TRIG_PORT = 4
 SOUND_HIGH = 1760
 SOUND_LOW = 220
-DISTANCE_HIGH = 75
+DISTANCE_HIGH = 100
 
 
 def make_sound(distance: float):
-    if distance > DISTANCE_HIGH+1:
-        distance = random.randint(0, DISTANCE_HIGH)
+    # if distance > DISTANCE_HIGH+1:
+    #     distance = random.randint(0, DISTANCE_HIGH)
     a = -DISTANCE_HIGH/(SOUND_HIGH-SOUND_LOW)
     b = -SOUND_HIGH*a
     return (distance-b)/a
