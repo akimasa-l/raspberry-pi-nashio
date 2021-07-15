@@ -1,6 +1,8 @@
 import Telmin
 import argparse
 import random
+import datetime
+import tm1637
 import nashio
 import numpy as np
 LA=440
@@ -14,6 +16,7 @@ OCTAVE = [(c, "ﾄﾞ"), (cc, "ﾄﾞ#"), (d, "ﾚ"), (dd, "ﾚ#"), (e, "ﾐ"), 
 class DisplaySound:
     def __init__(self):
         self.lcd = nashio.LCD()
+        self.tm = tm1637.TM1637(clk=21, dio=20)
         parser = argparse.ArgumentParser(description='音楽を鳴らすよ！')
         parser.add_argument(
             "-l", "--rangel",
@@ -44,6 +47,7 @@ class DisplaySound:
         self.lcd.write_string("ｼｭｳﾘｮｳ")
         self.lcd.newline()
         self.lcd.write_string("ｼﾏｼﾀ")
+        self.tm.show(" End")
 
     def make_sound(self, distance: float, base=OCTAVE):
         if distance >= self.args.distancemax:
@@ -51,6 +55,8 @@ class DisplaySound:
             self.lcd.write_string("ｵﾄﾊ")
             self.lcd.newline()
             self.lcd.write_string("ﾅｯﾃｲﾏｾﾝ")
+            now=datetime.datetime.now()
+            self.tm.numbers(now.hour,now.minute)
             return 0
         for i, j in zip(range(len(base))[::-1], np.linspace(0, self.args.distancemax, len(base)-1, endpoint=True)):
             if distance < j:
@@ -61,6 +67,7 @@ class DisplaySound:
                 self.lcd.write_string(f"{hz}Hz")
                 self.lcd.newline()
                 self.lcd.write_string(base[i][1])
+                self.tm.number(hz)
                 return hz
 
     def main(self, octave=OCTAVE):
