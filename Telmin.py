@@ -43,22 +43,20 @@ class Telmin:
             start = time.time()
         while GPIO.input(ECHO_PORT) == GPIO.HIGH:
             end = time.time()
-        duration = end-start
+        duration:float = end-start
         distance = duration*17000
         return distance
 
     def main(self, sound_function=make_sound):
-        try:
-            while 1:
-                distance = self.read_distance()
+        
+        distance = self.read_distance()
 
-                sound = sound_function(distance)
-                print("distance,sound", distance, sound)
+        sound = sound_function(distance)
+        print("distance,sound", distance, sound)
 
-                wiringpi.softToneWrite(SOUND_PORT, round(sound))
-                time.sleep(INTERVAL)
-        except KeyboardInterrupt:
-            return
+        wiringpi.softToneWrite(SOUND_PORT, round(sound))
+        time.sleep(INTERVAL)
+        
 
 
 if __name__ == "__main__":
